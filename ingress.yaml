@@ -7,7 +7,7 @@ spec:
   - host: ingress.dmil.ru
     http:
       paths:
-      - path: /
+      - path: /abc
         pathType: Prefix
         backend:
           service:
