@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+spec:
+  rules:
+  - host: 51.250.12.101
+    http:
+      paths:
+      - path: /
+        backend:
+          service:
+            name: svc-frontend
+            port:
+              number: 9003
+      - path: /api
+        backend:
+          service:
+            name: svc-backend
+            port:
+              number: 9004

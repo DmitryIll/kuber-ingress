@@ -126,15 +126,99 @@ spec:
 
 4. Продемонстрировать, что приложения видят друг друга с помощью Service.
 
+![alt text](image.png)
+
+![alt text](image-1.png)
+
+Из мультитула проверяю через curl:
+
+![alt text](image-2.png)
+
+- к фронтенду подключилось, ок.
+
+И к бэкенду:
+
+![alt text](image-4.png)
+
 
 5. Предоставить манифесты Deployment и Service в решении, а также скриншоты или вывод команды п.4.
+
+Предоставил см. выше.
 
 ------
 
 ### Задание 2. Создать Ingress и обеспечить доступ к приложениям снаружи кластера
 
 1. Включить Ingress-controller в MicroK8S.
+
+Сначала пробую установить istio.
+
+Устанавливаю istio по инструкции: https://istio.io/latest/docs/setup/getting-started/
+
+Ставлю истио  на micro:
+
+```
+curl -L https://istio.io/downloadIstio | sh -
+```
+
+![alt text](image-5.png)
+
+```
+cd istio-1.23.0/
+export PATH=$PWD/bin:$PATH
+```
+
+Пробую установить:
+
+```
+istioctl install -f samples/bookinfo/demo-profile-no-gateways.yaml -y
+```
+Но:
+
+![alt text](image-6.png)
+
+
+И действительно:
+
+![alt text](image-7.png)
+
+Тогда пойду по другому пути (в micro уже есть контроллер нужно только включить):
+
+```
+microk8s enable ingress
+```
+![alt text](image-8.png)
+
+
 2. Создать Ingress, обеспечивающий доступ снаружи по IP-адресу кластера MicroK8S так, чтобы при запросе только по адресу открывался _frontend_ а при добавлении /api - _backend_.
+
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+spec:
+  rules:
+  - host: 51.250.12.101
+    http:
+      paths:
+      - path: /
+        backend:
+          service:
+            name: svc-frontend
+            port:
+              number: 9003
+      - path: /api
+        backend:
+          service:
+            name: svc-backend
+            port:
+              number: 9004
+```
+
+
+
+
 3. Продемонстрировать доступ с помощью браузера или `curl` с локального компьютера.
 4. Предоставить манифесты и скриншоты или вывод команды п.2.
 
