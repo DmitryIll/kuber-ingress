@@ -4,7 +4,7 @@ metadata:
   name: svc-backend
 spec:
   selector:
-    app: backemd-multitool
+    app: backend-multitool
   ports:
     - name: multitool
       protocol: TCP
