@@ -7,14 +7,14 @@ spec:
   - host: ingress.dmil.ru
     http:
       paths:
-      - path: /abc
+      - path: /
         pathType: Prefix
         backend:
           service:
             name: svc-frontend
             port:
               number: 9003
-      - path: /
+      - path: /api
         pathType: Prefix
         backend:
           service:
