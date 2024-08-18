@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+  labels:
+    app: backend-multitool
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-multitool
+  template:
+    metadata:
+      labels:
+        app: backend-multitool
+    spec:
+      containers:
+      - name: multitool
+        image: wbitt/network-multitool
+        env:
+        - name: HTTP_PORT
+          value: "8080"
+        - name: HTTPS_PORT
+          value: "11443"
+        ports:
+        - containerPort: 8080
+          name: http-port
+        - containerPort: 11443
+          name: https-port
+
+
+
+    # spec:
+      # hostNetwork: true
+      # tolerations:
+      # - operator: Exists
+      #   effect: NoSchedule
+      # containers:
+
+      # - name: network-multitool
+        # image: wbitt/network-multitool
+        # env:
+        # - name: HTTP_PORT
+        #   value: "1180"
+        # - name: HTTPS_PORT
+        #   value: "11443"
+        # ports:
+        # - containerPort: 1180
+        #   name: http-port
+        # - containerPort: 11443
+        #   name: https-port
+
+        # resources:
+        #   requests:
+        #     cpu: "1m"
+        #     memory: "20Mi"
+        #   limits:
+        #     cpu: "10m"
+        #     memory: "20Mi"
+        # securityContext:
+        #   runAsUser: 0
+        #   capabilities:
+        #     add: ["NET_ADMIN"]
