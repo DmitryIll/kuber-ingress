@@ -215,11 +215,191 @@ spec:
             port:
               number: 9004
 ```
+Получили ошибки:
 
+![alt text](image-9.png)
 
+Тогда создал свое DNS имя - запись и проверил:
 
+![alt text](image-10.png)
+
+Скорректировал код:
+
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+spec:
+  rules:
+  - host: ingress.dmil.ru
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: svc-frontend
+            port:
+              number: 9003
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: svc-backend
+            port:
+              number: 9004
+```
+
+Опять применяю уже успешно:
+
+![alt text](image-11.png)
 
 3. Продемонстрировать доступ с помощью браузера или `curl` с локального компьютера.
+
+Работает доступ к frontend:
+
+![alt text](image-12.png)
+
+А вот с api не заработало:
+
+![alt text](image-13.png)
+
+При этмо сам сервис работает:
+
+![alt text](image-14.png)
+
+Еще попробовал поменять для пробы пути для frontend попробовал поставить /abc:
+
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+spec:
+  rules:
+  - host: ingress.dmil.ru
+    http:
+      paths:
+      - path: /abc
+        pathType: Prefix
+        backend:
+          service:
+            name: svc-frontend
+            port:
+              number: 9003
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: svc-backend
+            port:
+              number: 9004
+```
+
+Применил в кубере обновленную конфигурацию.
+
+Но, в браузере abc не заработало:
+
+![alt text](image-15.png)
+
+Пробовал и перевыключать контроллер на микро:
+
+![alt text](image-16.png)
+
+- думал может конфигурация не обновилась.
+
+и по пути / перестало работать - что логично т.к. я для пробы изменил на /abc:
+
+![alt text](image-17.png)
+
+Вот что выводит:
+
+![alt text](image-18.png)
+
+Теперь пробую / сделать для backend:
+
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+spec:
+  rules:
+  - host: ingress.dmil.ru
+    http:
+      paths:
+      - path: /abc
+        pathType: Prefix
+        backend:
+          service:
+            name: svc-frontend
+            port:
+              number: 9003
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: svc-backend
+            port:
+              number: 9004
+```
+
+
+![alt text](image-19.png)
+
+Теперь backend работает:
+
+![alt text](image-20.png)
+
+т.е. не работает именно path почему-то:
+
+![alt text](image-21.png)
+
+
+И еще раз возвращаю как надо:
+
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+spec:
+  rules:
+  - host: ingress.dmil.ru
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: svc-frontend
+            port:
+              number: 9003
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: svc-backend
+            port:
+              number: 9004
+```
+
+![alt text](image-22.png)
+
+
+Опять по умолчанию без адреса работает:
+
+![alt text](image-23.png)
+
+а с /api не работает:
+
+![alt text](image-24.png)
+
+![alt text](image-25.png)
+
+Почему?
+
 4. Предоставить манифесты и скриншоты или вывод команды п.2.
 
 ------
