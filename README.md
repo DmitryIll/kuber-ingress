@@ -269,6 +269,8 @@ spec:
 
 ![alt text](image-14.png)
 
+Причина - т.к. на бэкенд пересылается также и параметр /api а его там нет.
+
 Еще попробовал поменять для пробы пути для frontend попробовал поставить /abc:
 
 ```
@@ -303,21 +305,10 @@ spec:
 
 ![alt text](image-15.png)
 
-Пробовал и перевыключать контроллер на микро:
+Причина потому что на backend нет abc пути.
 
-![alt text](image-16.png)
 
-- думал может конфигурация не обновилась.
-
-и по пути / перестало работать - что логично т.к. я для пробы изменил на /abc:
-
-![alt text](image-17.png)
-
-Вот что выводит:
-
-![alt text](image-18.png)
-
-Теперь пробую / сделать для backend:
+Теперь пробую / сделать для  backend для проверки хото что-то работает:
 
 ```
 apiVersion: networking.k8s.io/v1
@@ -352,31 +343,31 @@ spec:
 
 ![alt text](image-20.png)
 
-т.е. не работает именно path почему-то:
+Для исправления - добавлюя rewrite:
 
-![alt text](image-21.png)
-
-
-И еще раз возвращаю как надо:
 
 ```
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: my-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/rewrite-target: /$1$2  
+    #nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   rules:
   - host: ingress.dmil.ru
     http:
       paths:
-      - path: /
+      - path: /(/|$)(.*)
         pathType: Prefix
         backend:
           service:
             name: svc-frontend
             port:
               number: 9003
-      - path: /api
+      - path: /api(/|$)(.*)
         pathType: Prefix
         backend:
           service:
@@ -385,20 +376,19 @@ spec:
               number: 9004
 ```
 
-![alt text](image-22.png)
+Теперь работает:
+
+Если без параметров:
+
+![alt text](image-26.png)
+
+Если api:
+
+https://ingress.dmil.ru/api
+
+![alt text](image-27.png)
 
 
-Опять по умолчанию без адреса работает:
-
-![alt text](image-23.png)
-
-а с /api не работает:
-
-![alt text](image-24.png)
-
-![alt text](image-25.png)
-
-Почему?
 
 4. Предоставить манифесты и скриншоты или вывод команды п.2.
 
