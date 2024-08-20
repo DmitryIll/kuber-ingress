@@ -2,19 +2,23 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: my-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/rewrite-target: /$1$2  
+    #nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   rules:
   - host: ingress.dmil.ru
     http:
       paths:
-      - path: /
+      - path: /(/|$)(.*)
         pathType: Prefix
         backend:
           service:
             name: svc-frontend
             port:
               number: 9003
-      - path: /api
+      - path: /api(/|$)(.*)
         pathType: Prefix
         backend:
           service:
