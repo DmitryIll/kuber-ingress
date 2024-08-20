@@ -8,6 +8,9 @@ metadata:
     #nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   rules:
+  - host: ingress.dmil.ru
+    http:
+      paths:
       - path: /(/|$)(.*)
         pathType: Prefix
         backend:
@@ -22,3 +25,4 @@ spec:
             name: svc-backend
             port:
               number: 9004
+
